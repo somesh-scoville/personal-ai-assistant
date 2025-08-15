@@ -1,0 +1,1 @@
+This repository contains an agentic AI personal assistant designed to help you manage your daily tasks and information with sophisticated, human-like reasoning. 
