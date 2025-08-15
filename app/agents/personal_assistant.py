@@ -35,18 +35,19 @@ class UpdateMemory(TypedDict):
 class Profile(BaseModel):
     """This is a profile of the user you are interacting with."""
 
-    name: Optional[str] = Field(None, description="The user's name", default=None)
-    age: Optional[int] = Field(None, description="The user's age",default=None)
-    location: Optional[str] = Field(None, description="The user's location", default=None)
-    job: Optional[str] = Field(None, description="The user's job", default=None)
-    connections: List[str] = Field(default_factory=list, description="Peronal connection of the user, such as family members, friends, or coworkers", default=[])
-    interests: List[str] = Field(default_factory=list, description="The user's interests or hobbies", default=[])
+    name: Optional[str] = Field(description="The user's name", default=None)
+    age: Optional[int] = Field(description="The user's age",default=None)
+    location: Optional[str] = Field( description="The user's location", default=None)
+    job: Optional[str] = Field(description="The user's job", default=None)
+    connections: List[str] = Field(default_factory=list, description="Peronal connection of the user, such as family members, friends, or coworkers")
+    interests: List[str] = Field(default_factory=list, description="The user's interests or hobbies")
 
 # ToDo schema
 class ToDo(BaseModel):
+    """ToDo item for the user to complete."""
     task: str = Field(description="The task to be completed.")
-    time_to_complete: Optional[int] = Field(description="Estimated time to complete the task (minutes).")
-    deadline: Optional[datetime] = Field(
+    time_to_complete: Optional[str] = Field(description="Estimated time to complete the task (minutes).")
+    deadline: Optional[str] = Field(
         description="When the task needs to be completed by (if applicable)",
         default=None
     )
