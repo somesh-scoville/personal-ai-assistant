@@ -78,7 +78,7 @@ def main(user_name):
             st.write(prompt)
 
         # Get AI response using the existing agent
-        response = my_agent_function(prompt,st.session_state['user-name', selected_thread])
+        response = my_agent_function(prompt,st.session_state['user-name'], selected_thread)
         ai_message = AIMessage(content=response)
 
         # Add AI response to chat history
