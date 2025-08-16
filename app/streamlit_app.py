@@ -1,6 +1,8 @@
 import streamlit as st
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 import os
+import sys
+from client import chat_with_agent
 
 # Initialize session state for chat history and threads
 if 'chat_threads' not in st.session_state:
@@ -18,13 +20,27 @@ def get_chat_history():
     return st.session_state.chat_threads[st.session_state.current_thread]
 
 
-def my_agent_function(prompt):
+def my_agent_function(prompt, user_name, thread_name):
     # This function should contain the logic to get a response from your agent.
     # For demonstration, we'll just return a simple response.
-    return f"Response to: {prompt}"
 
-def main():
-    st.title("Chat Assistant")
+    response_json = chat_with_agent(message=prompt, user_id=user_name, thread_id=thread_name)
+
+    return response_json.get('response', "error occurred while processing your request.")
+
+
+
+def main(user_name):
+
+    st.set_page_config(page_title="Chatbot Assistant")
+
+    st.markdown("<h1 style='text-align: center; font-size: 50px;'>Chat Assistant</h1>", unsafe_allow_html=True)
+
+
+    if 'user-name' not in st.session_state:
+        st.session_state['user-name'] = user_name
+
+    
 
     # Sidebar for thread management
     with st.sidebar:
@@ -62,7 +78,7 @@ def main():
             st.write(prompt)
 
         # Get AI response using the existing agent
-        response = my_agent_function(prompt)
+        response = my_agent_function(prompt,st.session_state['user-name', selected_thread])
         ai_message = AIMessage(content=response)
 
         # Add AI response to chat history
@@ -73,4 +89,5 @@ def main():
             st.write(response)
 
 if __name__ == "__main__":
-    main()
+    user_name = sys.argv[1] if len(sys.argv) > 1 else "User"
+    main(user_name)
