@@ -10,48 +10,67 @@ This repository contains an agentic AI personal assistant designed to help you m
 - Streamlit Web UI
 
 ## Getting Started
-1. clone the repository
-```bash
-git clone https://github.com/Harshad1994/personal-ai-assistant.git
-```
-2. step into personal-ai-assistant
-```bash
-cd personal-ai-assistant
-```
-3. create & activate virtual environment with uv
-```bash
-uv sync
-```
-or
-create it with venv and activate and install dependencies
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-4. Create ENV file - replace keys in .env.example with your keys and rename the file to .env
+1. **Clone the repository**
+    ```bash
+    git clone https://github.com/Harshad1994/personal-ai-assistant.git
+    cd personal-ai-assistant
+    ```
 
-5. Run services
-step into personal-ai-assistant/app and run following commands in seperate terminal
-```bash
-python run_service.py
+2. **Set up the environment**
+    ```bash
+    # Using UV (recommended)
+    uv sync
 
-streamlit run streamlit_app.py user123
-```
+    # OR using venv
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+    ```
+
+3. **Configure environment variables**
+    - Copy `.env.example` to `.env`
+    - Replace placeholder values with your actual API keys
+
+4. **Run the services**
+    ```bash
+    # Terminal 1: Start the backend service
+    cd app
+    python run_service.py
+
+    # Terminal 2: Launch the Streamlit UI
+    cd app
+    streamlit run streamlit_app.py user123
+    ```
 
 ## Usage
-1. Open the streamlit UI
-2. Start chatting with the personal assistant
-3. You can create new thread using left panel on the UI and seamlessly move between threads
+1. **Open the Streamlit UI**
+    - Navigate to http://localhost:8501 after starting the services
+    - Enter your username or ID when prompted
+
+2. **Interact with the Assistant**
+    - Type your messages in the chat interface
+    - The assistant will maintain context across conversations
+    - Use natural language to communicate your needs
+
+3. **Manage Conversations**
+    - Create new conversation threads using the sidebar
+    - Switch between different threads to manage multiple topics
+    - Each thread maintains its own context and history
+    - Todo List and User Profile is maintained across threads.
+
+4. **Access Features**
+    - Use the assistant for task management
+    - Store and retrieve information across sessions
+    - Get help with various daily activities
 
 ## Technologies
-- Python
-- LangGraph
-- FastAPI
-- Langsmith
-- trustcall
-- Streamlit
-- UV (python dependency manager)
+- **Python** - Primary programming language
+- **LangGraph** - LLM framework for building conversational AI Agents
+- **FastAPI** - Backend API framework
+- **Groq API** - Free LLM Usage
+- **LangSmith** - Observability and debugging platform
+- **Streamlit** - Web interface framework
+- **UV** - Modern Python package installer and resolver
 
 ## Architecture
 High-level overview of system architecture and components.
