@@ -1,13 +1,20 @@
 # Personal AI Assistant
 
 ## Description
-This repository contains an agentic AI personal assistant designed to help you manage your daily tasks and information with sophisticated, human-like reasoning.
+This repository implements an advanced AI personal assistant powered by LLM agents. It's designed to assist with daily tasks, information management, and decision-making through natural conversations while maintaining context and memory across sessions.
 
 ## Features
-- Multi-session conversation
-- Short Term and Long Term Memory: Learns and persists user information, to-do list with long term Memory
-- Tracing & Observability with LangSmith
-- Streamlit Web UI
+- **Intelligent Conversations**: Natural, context-aware dialogue with sophisticated reasoning
+- **Memory Management**:
+    - Short-term memory for ongoing conversations
+    - Long-term memory for user preferences and historical data
+    - Persistent todo lists and user profiles
+- **Multi-Session Support**: Maintain multiple parallel conversation threads
+- **Observability**: Complete tracing and monitoring via LangSmith
+- **Modern Architecture**:
+    - Fast and responsive Streamlit web interface
+    - RESTful backend with FastAPI
+    - Efficient LLM interactions through Groq
 
 ## Getting Started
 1. **Clone the repository**
