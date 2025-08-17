@@ -6,10 +6,13 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.116.1",
+    "ipykernel>=6.30.1",
     "langchain-core>=0.3.74",
     "langchain-groq>=0.3.7",
     "langchain-openai>=0.3.30",
     "langgraph>=0.6.5",
+    "langgraph-checkpoint-mongodb>=0.1.4",
+    "langgraph-store-mongodb>=0.0.1",
     "python-dotenv>=1.1.1",
     "streamlit>=1.48.1",
     "trustcall>=0.0.39",
