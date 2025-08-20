@@ -5,8 +5,7 @@ from dotenv import load_dotenv
 _  =load_dotenv()
 
 #import required libraries
-from typing import TypedDict, Literal, List, Optional, Dict, Any
-from pydantic import BaseModel, Field
+from typing import Literal
 import uuid
 
 from datetime import datetime
@@ -25,49 +24,10 @@ from langgraph.graph import StateGraph, MessagesState, END, START
 from core.llm import model
 
 from agents.prompts import *
-from agents.utilities import extract_tool_info, Spy
+from agents.utilities import extract_tool_info
+from agents.tools import Profile, ToDo, UpdateMemory
 
-# Update memory tool
-class UpdateMemory(TypedDict):
-    """ Decision on what memory type to update."""
-    update_type: Literal['user', 'todo', 'instructions']
-
-class Profile(BaseModel):
-    """This is a profile of the user you are interacting with."""
-
-    name: Optional[str] = Field(description="The user's name", default=None)
-    age: Optional[int] = Field(description="The user's age",default=None)
-    location: Optional[str] = Field( description="The user's location", default=None)
-    job: Optional[str] = Field(description="The user's job", default=None)
-    connections: List[str] = Field(default_factory=list, description="Peronal connection of the user, such as family members, friends, or coworkers")
-    interests: List[str] = Field(default_factory=list, description="The user's interests or hobbies")
-
-# ToDo schema
-class ToDo(BaseModel):
-    """ToDo item for the user to complete."""
-    task: str = Field(description="The task to be completed.")
-    time_to_complete: Optional[str] = Field(description="Estimated time to complete the task (minutes).")
-    deadline: Optional[str] = Field(
-        description="When the task needs to be completed by (if applicable)",
-        default=None
-    )
-    solutions: list[str] = Field(
-        description="List of specific, actionable solutions (e.g., specific ideas, service providers, or concrete options relevant to completing the task)",
-        min_items=1,
-        default_factory=list
-    )
-    status: Literal["not started", "in progress", "done", "archived"] = Field(
-        description="Current status of the task",
-        default="not started"
-    )
-
-
-#Trustcall extractor for updating the user's profile
-profile_extractor = create_extractor(
-    model,
-    tools = [Profile],
-    tool_choice="Profile"
-)
+from agents.utilities import profile_extractor, todo_extractor, spy
 
 
 ##Node definitions
@@ -112,9 +72,6 @@ def task_assistant(state: MessagesState, config: RunnableConfig, store: BaseStor
     response = model.bind_tools([UpdateMemory], parallel_tool_calls=False).invoke([SystemMessage(content=system_msg)]+state["messages"])
 
     return {"messages": [response]}
-
-
-
 
 
 def update_profile(state: MessagesState, config: RunnableConfig, store: BaseStore):
@@ -182,16 +139,6 @@ def update_todos(state: MessagesState, config: RunnableConfig, store: BaseStore)
     TRUSTCALL_INSTRUCTION_FORMATTED=TRUSTCALL_INSTRUCTION.format(time=datetime.now().isoformat())
     updated_messages=list(merge_message_runs(messages=[SystemMessage(content=TRUSTCALL_INSTRUCTION_FORMATTED)] + state["messages"][:-1]))
 
-    # Initialize the spy for visibility into the tool calls made by Trustcall
-    spy = Spy()
-    
-    # Create the Trustcall extractor for updating the ToDo list 
-    todo_extractor = create_extractor(
-    model,
-    tools=[ToDo],
-    tool_choice=tool_name,
-    enable_inserts=True
-    ).with_listeners(on_end=spy)
 
     # Invoke the extractor
     result = todo_extractor.invoke({"messages": updated_messages, 
@@ -252,24 +199,31 @@ def route_message(state: MessagesState, config: RunnableConfig, store: BaseStore
             raise ValueError
         
 
-# Create the graph + all nodes
-builder = StateGraph(MessagesState)
+def create_agent_graph(checkpointer, store) -> StateGraph:
+    """Create the agent graph for the personal assistant."""
 
-# Define the flow of the memory extraction process
-builder.add_node(task_assistant)
-builder.add_node(update_todos)
-builder.add_node(update_profile)
-builder.add_node(update_instructions)
+    # Create the graph + all nodes
+    builder = StateGraph(MessagesState)
 
-# Define the flow 
-builder.add_edge(START, "task_assistant")
-builder.add_conditional_edges("task_assistant", route_message)
-builder.add_edge("update_todos", "task_assistant")
-builder.add_edge("update_profile", "task_assistant")
-builder.add_edge("update_instructions", "task_assistant")
+    # Define the flow of the memory extraction process
+    builder.add_node(task_assistant)
+    builder.add_node(update_todos)
+    builder.add_node(update_profile)
+    builder.add_node(update_instructions)
 
-across_thread_memory = InMemoryStore()
-within_thread_memory = MemorySaver()
+    # Define the flow 
+    builder.add_edge(START, "task_assistant")
+    builder.add_conditional_edges("task_assistant", route_message)
+    builder.add_edge("update_todos", "task_assistant")
+    builder.add_edge("update_profile", "task_assistant")
+    builder.add_edge("update_instructions", "task_assistant")
 
-# Compile the graph
-graph = builder.compile(checkpointer=within_thread_memory, store=across_thread_memory)
+    # across_thread_memory = InMemoryStore()
+    # within_thread_memory = MemorySaver()
+
+    if checkpointer is None:
+        checkpointer = MemorySaver()
+    if store is None:
+        store = InMemoryStore()
+    # Compile the graph with the checkpointer and store
+    return builder.compile(checkpointer=checkpointer, store=store)

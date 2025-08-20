@@ -1,4 +1,10 @@
 # Inspect the tool calls for Trustcall
+
+from core.llm import model
+from trustcall import create_extractor
+from agents.tools import ToDo, Profile
+
+
 class Spy:
     def __init__(self):
         self.called_tools = []
@@ -71,3 +77,22 @@ def extract_tool_info(tool_calls, schema_name="Memory"):
             )
     
     return "\n\n".join(result_parts)
+
+# Initialize the spy for visibility into the tool calls made by Trustcall
+spy = Spy()
+
+# Create the Trustcall extractor for updating the ToDo list 
+todo_extractor = create_extractor(
+model,
+tools=[ToDo],
+tool_choice= "ToDo",
+enable_inserts=True
+).with_listeners(on_end=spy)
+
+
+#Trustcall extractor for updating the user's profile
+profile_extractor = create_extractor(
+    model,
+    tools = [Profile],
+    tool_choice="Profile"
+)

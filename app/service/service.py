@@ -11,11 +11,13 @@ from langchain_core.messages import AIMessage, HumanMessage
 import json
 import asyncio
 
-from agents.personal_assistant import graph
+from agents.personal_assistant import create_agent_graph
 
 from service.schemas import UserInput, ResponseModel
 
 app = FastAPI()
+# Initialize the agent graph
+graph = create_agent_graph(checkpointer=None,store=None)
 
 # CORS middleware setup
 app.add_middleware(
