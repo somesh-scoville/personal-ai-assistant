@@ -35,6 +35,40 @@ async def chat(request:UserInput) -> ResponseModel:
     input_message = HumanMessage(content=request.message)
 
     try:
+
+        response = await graph.ainvoke({"messages": input_message}, config=config)
+        
+
+        last_message = response['messages'][-1]
+        if isinstance(last_message, AIMessage):
+            # Process the AI message as needed
+            response_message = last_message.content
+            status = "success"
+
+        else:
+            response_message="Unexpected message type received."
+            status = "error"
+
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    return ResponseModel(
+        response=response_message,
+        thread_id=request.thread_id,
+        user_id=request.user_id,
+        status=status
+    )
+
+
+
+@app.post("/chat_stream")
+async def chat(request:UserInput) -> ResponseModel:
+
+    config = {"configurable":{"thread_id": request.thread_id, "user_id": request.user_id}}
+    input_message = HumanMessage(content=request.message)
+
+    try:
         for chunk in graph.stream({"messages":input_message}, config=config, stream_mode="values"):
             last_message = chunk['messages'][-1]
             if isinstance(last_message, AIMessage):
