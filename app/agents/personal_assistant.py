@@ -218,8 +218,6 @@ def create_agent_graph(checkpointer, store) -> StateGraph:
     builder.add_edge("update_profile", "task_assistant")
     builder.add_edge("update_instructions", "task_assistant")
 
-    # across_thread_memory = InMemoryStore()
-    # within_thread_memory = MemorySaver()
 
     if checkpointer is None:
         checkpointer = MemorySaver()

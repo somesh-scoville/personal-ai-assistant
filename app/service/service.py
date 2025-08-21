@@ -12,24 +12,33 @@ from agents.personal_assistant import create_agent_graph
 from service.schemas import UserInput, ResponseModel
 
 from collections.abc import AsyncGenerator
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, contextmanager
 
+from memory.mongodb import initialize_store, initialize_saver
 
+@asynccontextmanager
 async def lifespan(app:FastAPI) -> AsyncGenerator:
     """
     initializes mongodb database checkpointer and store
     """
 
     try:
-        pass
+        # async with initialize_saver() as saver, initialize_store() as store:
+        saver = await initialize_saver()
+        store = await initialize_store()
+
+
+        agent = create_agent_graph(checkpointer=saver,store=store)
+        #need to store the agent in the app state for access in routes
+        app.state.agent = agent
+
+        yield
 
     except Exception as e:
         raise e
 
+app = FastAPI(lifespan=lifespan)
 
-app = FastAPI()
-# Initialize the agent graph
-graph = create_agent_graph(checkpointer=None,store=None)
 
 # CORS middleware setup
 app.add_middleware(
@@ -47,8 +56,11 @@ async def chat(request:UserInput) -> ResponseModel:
     input_message = HumanMessage(content=request.message)
 
     try:
+        #now lets access agent from app lifespan
 
-        response = await graph.ainvoke({"messages": input_message}, config=config)
+        agent = app.state.agent
+
+        response = await agent.ainvoke({"messages": input_message}, config=config)
         
 
         last_message = response['messages'][-1]
