@@ -7,13 +7,25 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from langchain_core.messages import AIMessage, HumanMessage
 
-
-import json
-import asyncio
-
 from agents.personal_assistant import create_agent_graph
 
 from service.schemas import UserInput, ResponseModel
+
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+
+
+async def lifespan(app:FastAPI) -> AsyncGenerator:
+    """
+    initializes mongodb database checkpointer and store
+    """
+
+    try:
+        pass
+
+    except Exception as e:
+        raise e
+
 
 app = FastAPI()
 # Initialize the agent graph
