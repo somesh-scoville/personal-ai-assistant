@@ -14,13 +14,8 @@ from service.schemas import UserInput, ResponseModel
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-# from memory.mongodb import initialize_store, initialize_saver
+from memory.mongodb import initialize_saver
 
-## Settings ##
-from config.settings import settings
-
-from langgraph.store.mongodb import MongoDBStore
-from langgraph.checkpoint.mongodb.aio import AsyncMongoDBSaver
 
 @asynccontextmanager
 async def lifespan(app:FastAPI) -> AsyncGenerator:
@@ -30,14 +25,7 @@ async def lifespan(app:FastAPI) -> AsyncGenerator:
 
     try:
         print("initializing mongo saver")
-        async with AsyncMongoDBSaver.from_conn_string(
-                    conn_string=settings.MONGO_URI,
-                    db_name=settings.MONGO_DB_NAME,
-                    checkpoint_collection_name=settings.MONGO_STATE_CHECKPOINT_COLLECTION,
-                    writes_collection_name=settings.MONGO_STATE_WRITES_COLLECTION,
-                ) as saver:
-            
-            
+        async with initialize_saver() as saver:
             agent = create_agent_graph(checkpointer=saver,store=None)
             #need to store the agent in the app state for access in routes
             app.state.agent = agent
@@ -66,7 +54,10 @@ app.add_middleware(
 @app.post("/chat")
 async def chat(request:UserInput) -> ResponseModel:
 
-    config = {"configurable":{"thread_id": request.thread_id, "user_id": request.user_id}}
+    #seperating threads with user id and thread id
+    thread_id = request.user_id + "_" + request.thread_id
+
+    config = {"configurable":{"thread_id": thread_id, "user_id": request.user_id}}
     input_message = HumanMessage(content=request.message)
 
     try:
