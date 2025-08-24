@@ -20,7 +20,8 @@ This repository implements an advanced AI personal assistant powered by LLM agen
     - Python 3.10 or higher
     - Groq API key for LLM access
     - LangSmith API key for observability
-    - MongoDB instance (local or cloud)
+    - MongoDB instance or 
+    - or PostgreSQL Instance(local or cloud)
     - Basic familiarity with Python and command line
 
 ## Getting Started
@@ -84,6 +85,7 @@ This repository implements an advanced AI personal assistant powered by LLM agen
 - **Groq API** - Free LLM Usage
 - **LangSmith** - Observability and debugging platform
 - **Mongo DB** - To persist long term and short term memory
+- **PostgreSQL** - To persist long term and short term memory
 - **Streamlit** - Web interface framework
 - **UV** - Modern Python package installer and resolver
 
