@@ -14,30 +14,34 @@ from service.schemas import UserInput, ResponseModel
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from memory.mongodb import initialize_saver
+from memory import initialize_database, initialize_store
 
 
 @asynccontextmanager
 async def lifespan(app:FastAPI) -> AsyncGenerator:
     """
-    initializes mongodb database checkpointer and store
+    initializes database checkpointer and store based on settings
     """
-
     try:
-        print("initializing mongo saver")
-        async with initialize_saver() as saver:
-            agent = create_agent_graph(checkpointer=saver,store=None)
+        async with initialize_database() as saver, initialize_store() as store:
+
+            if hasattr(saver, "setup"):
+                await saver.setup()
+            if hasattr(store, "setup"):
+                await store.setup()
+
+            agent = create_agent_graph(checkpointer=saver,store=store)
             #need to store the agent in the app state for access in routes
             app.state.agent = agent
 
             yield
 
     except Exception as e:
-        raise e
+        print(f"Error during database or store initialization: {e}")
     
     finally:
         # The code here runs on shutdown.
-        print("Log: Application shutting down...")
+        print("Log:--> Application shutting down...")
 
 app = FastAPI(lifespan=lifespan)
 

@@ -2,8 +2,11 @@ from dotenv import find_dotenv
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr
+from enum import StrEnum
 
-
+class DatabaseType(StrEnum):
+    POSTGRES = "postgres"
+    MONGO = "mongo"
 
 class Settings(BaseSettings):
 
@@ -23,6 +26,22 @@ class Settings(BaseSettings):
     SERVICE_HOST : str | None = None
     SERVICE_PORT : int | None = None
     DEV : bool = True
+
+
+    # Database Configuration
+    DATABASE_TYPE: DatabaseType = (
+        DatabaseType.POSTGRES
+    )
+
+    # PostgreSQL Configuration
+    POSTGRES_USER: str | None = None
+    POSTGRES_PASSWORD: SecretStr | None = None
+    POSTGRES_HOST: str | None = None
+    POSTGRES_PORT: int | None = None
+    POSTGRES_DB: str | None = None
+    POSTGRES_APPLICATION_NAME: str = "personal-ai-assistant"
+    POSTGRES_MIN_CONNECTIONS_PER_POOL: int = 1
+    POSTGRES_MAX_CONNECTIONS_PER_POOL: int = 1
 
 
     # MongoDB Configuration

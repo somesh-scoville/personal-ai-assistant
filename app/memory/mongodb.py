@@ -4,7 +4,7 @@ from langgraph.store.mongodb import MongoDBStore
 from langgraph.checkpoint.mongodb.aio import AsyncMongoDBSaver
 
 
-def initialize_saver():
+def get_mongodb_saver():
     return AsyncMongoDBSaver.from_conn_string(
                 conn_string=settings.MONGO_URI,
                 db_name=settings.MONGO_DB_NAME,
@@ -13,7 +13,7 @@ def initialize_saver():
             )
 
 
-async def initialize_store(): 
+def get_mongodb_store(): 
     return MongoDBStore.from_conn_string(
             conn_string=settings.MONGO_URI,
             db_name=settings.MONGO_DB_NAME,
