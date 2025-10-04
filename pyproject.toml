@@ -3,7 +3,7 @@ name = "personal-ai-assistant"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = [
     "asyncpg>=0.30.0",
     "fastapi>=0.116.1",
@@ -23,10 +23,22 @@ dependencies = [
     "trustcall>=0.0.39",
     "uvicorn>=0.35.0",
 ]
+[tool.uv.workspace]
+members = [
+    "app"
+]
 
-[tool.setuptools]
-# As we are using flat layout we need to explicitly list packages
-packages = ["app"]
+[dependency-groups]
+dev = [
+    "coverage==7.6.12",
+    "moto==5.1.0",
+    "mypy==1.14.1",
+    "pytest-cov==6.0.0",
+    "pytest-xdist==3.6.1",
+    "pytest==8.3.4",
+    "ruff==0.9.7",
+    "types-requests",
+]
 
 [tool.mypy]
 disallow_untyped_calls = false
