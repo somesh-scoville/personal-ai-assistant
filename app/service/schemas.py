@@ -2,9 +2,10 @@ from pydantic import BaseModel
 
 
 class UserInput(BaseModel):
-    message:str
+    message: str
     user_id: str
     thread_id: str
+
 
 class ResponseModel(BaseModel):
     response: str
