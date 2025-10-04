@@ -35,7 +35,7 @@ async def get_postgres_saver():
     ) as pool:
         try:
             async with pool.connection() as conn:
-                checkpointer = AsyncPostgresSaver(conn)
+                checkpointer = AsyncPostgresSaver(conn)  # type: ignore
                 await checkpointer.setup()
                 yield checkpointer
 
@@ -58,7 +58,7 @@ async def get_postgres_store():
     ) as pool:
         try:
             async with pool.connection() as conn:
-                store = AsyncPostgresStore(conn)
+                store = AsyncPostgresStore(conn)  # type: ignore
                 await store.setup()
                 yield store
 
