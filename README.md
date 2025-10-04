@@ -46,7 +46,15 @@ This repository implements an advanced AI personal assistant powered by LLM agen
     - Copy `.env.example` to `.env`
     - Replace placeholder values with your actual API keys
 
-4. **Run the services**
+4. **Create Database**
+    ```bash
+    # for postgres database
+    psql -U postgres -h 127.0.0.1 -p 5432 -c "CREATE DATABASE personal_ai_assistant;"
+    # for mongodb database
+    mongosh --host 127.0.0.1 --port 27017 --eval "use personal_ai_assistant"
+    ```
+
+5. **Run the services**
     ```bash
     # Terminal 1: Start the backend service
     cd app
@@ -56,6 +64,22 @@ This repository implements an advanced AI personal assistant powered by LLM agen
     cd app
     streamlit run streamlit_app.py user123
     ```
+
+6. **Run the services in Docker**
+   ```bash
+   # Terminal 1: Start the backend service
+   cd app
+   # to remove database mounted volume along with the container use -v
+   # docker-compose down -v
+   docker-compose down
+   docker-compose up --build
+   ```
+
+   ```bash
+   # Terminal 2: Launch the Streamlit UI
+   cd app
+   streamlit run streamlit_app.py user123
+   ```
 
 ## Usage
 1. **Open the Streamlit UI**
