@@ -1,5 +1,4 @@
-from config.settings import settings, DatabaseType
-
+from config.settings import DatabaseType, settings
 from memory.mongodb import get_mongodb_saver, get_mongodb_store
 from memory.postgres import get_postgres_saver, get_postgres_store
 
@@ -12,7 +11,7 @@ def initialize_database():
         return get_mongodb_saver()
     else:
         raise ValueError("Unsupported database type")
-    
+
 
 def initialize_store():
     """Initialize appropriate database checkpointer"""
@@ -22,5 +21,6 @@ def initialize_store():
         return get_postgres_store()
     else:
         raise ValueError("Unsupported database type")
+
 
 __all__ = ["initialize_database", "initialize_store"]
